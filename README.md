@@ -1,0 +1,1 @@
+Electron encrypted chat. Client side
