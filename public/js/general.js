@@ -10,3 +10,9 @@ function enterChat(data) {
     createErrorMessage(data.result);
   }
 }
+
+function initSocketErrorListener(socket) {
+  socket.on('connect_error', () => {
+    createErrorMessage('connection error');
+  });
+}

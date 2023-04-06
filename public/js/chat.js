@@ -1,7 +1,5 @@
 const request = window.location.search.substr(1).split("&");
 
-console.log(request);
-
 let auth = {};
 
 auth.id = Number(request[0].split('=')[1]);
@@ -14,6 +12,8 @@ removeKeys({ isActive: false });
 const socket = io('http://localhost:18092/chat', {
   query: { userId: auth.id, userLogin: auth.login }
 });
+
+initSocketErrorListener(socket);
 
 function showMessage(userId, userLogin, value, position = 'beforeend', color = 'warning') {
   document.querySelector(`.messagesBlock[data-user-id="${ userId }"]`).insertAdjacentHTML(position,
@@ -53,6 +53,7 @@ function initDialog(userId, userLogin, checkMessages) {
 	if (checkMessages) {
     
 		function showMoreMessages() {
+
 			socket.emit('showMessages', {
         firstUser: { id: auth.id, login: auth.login },
         secondUser: {id: userId, login: userLogin},
@@ -72,8 +73,6 @@ function insertUserToList(block, user, position = 'beforeend') {
 }
 
 function insertUserWithTabToList(userBlock, tabBlock, user, position = 'beforeend') {
-
-  console.log(document.getElementById(userBlock));
 
   const checkMessages = user.messagesCount > 0;
 
@@ -138,9 +137,9 @@ socket.on('init', initPage);
 
 socket.on('showMessages', function(data) {
 
-  let secondUserId = data.result.secondUserId;
-
   console.log(data);
+
+  let secondUserId = data.result.secondUserId;
 
   document.querySelector(`.userLink[data-user-id="${ secondUserId }"]`).dataset.lastIndex = data.result.newLast;
 	document.querySelector(`.userLink[data-user-id="${ secondUserId }"]`).dataset.messagesCount = data.result.newMessagesCount;
@@ -230,8 +229,6 @@ socket.on('userJoined', function(data) {
 
       let span = userListItem.querySelector('.circle');
 
-      console.log(span);
-
       span.classList.remove('bg-danger');
       span.classList.add('bg-success');
     }
@@ -249,9 +246,6 @@ socket.on('userLeft', async function(data) {
   if (elem === null) {
     
     let span = document.querySelector(`.userLink[data-user-id="${data.userId}"] > .circle`);
-
-    console.log(data.userId);
-    console.log(span);
 
     span.classList.remove('bg-success');
     span.classList.add('bg-danger');
@@ -278,8 +272,6 @@ document.getElementById('removeMyselfButton').addEventListener('click', function
 
 socket.on('removeUser', async function(data) {
 
-  console.log(data);
-
   if (data.success) {
 
     if (data.result == auth.id) {
@@ -288,10 +280,13 @@ socket.on('removeUser', async function(data) {
     } else {
       let userLink = document.querySelector(`.userLink[data-user-id="${data.result}"]`);
 
-      console.log(data.result);
-      console.log(userLink);
       userLink.querySelector('.loginBlock').innerHTML = 'DELETED';
-      document.querySelector(`.messageInputBlock[data-user-id="${data.result}"]`).remove();
+
+      const messageInputBlock = document.querySelector(`.messageInputBlock[data-user-id="${data.result}"]`);
+
+      if (messageInputBlock !== null) {
+        messageInputBlock.remove();
+      }
     }
   } else {
     createErrorMessage(data.result);

@@ -1,5 +1,7 @@
 const socket = io('http://localhost:18092/login');
 
+initSocketErrorListener(socket);
+
 document.getElementById('loginForm').addEventListener('submit', function(e) {
 
   e.preventDefault();

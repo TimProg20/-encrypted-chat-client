@@ -149,8 +149,6 @@ function remove(request) {
   }
 
   let response;
-
-  console.log(request);
             
   db.deleteRow(this.tableName, request, (success, result) => {
     response = {

@@ -5,8 +5,6 @@ function createTable(event, request)  {
 }
 
 function create(event, request) {
-  console.log('create');
-  console.log(request);
   return keyModel.insert(request);
 }
 

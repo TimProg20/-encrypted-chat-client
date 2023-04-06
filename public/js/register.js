@@ -1,5 +1,7 @@
 const socket = io('http://localhost:18092/register');
 
+initSocketErrorListener(socket);
+
 document.getElementById('registerForm').addEventListener('submit', function(e) {
 
   e.preventDefault();
